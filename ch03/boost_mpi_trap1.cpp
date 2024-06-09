@@ -1,9 +1,7 @@
-#include <mpi.h>
+#include <boost/mpi/environment.hpp>
+#include <boost/mpi/communicator.hpp>
 #include <format>
 #include <iostream>
-
-// Get the input values.
-void get_input(int my_rank, int comm_sz, double a, double b, int n);
 
 // Calculate local integral.
 double trap(double left_endpt, double right_endpt, int trap_count, double base_len);
@@ -12,15 +10,15 @@ double trap(double left_endpt, double right_endpt, int trap_count, double base_l
 double f(double x);
 
 int main() {
-    int my_rank, comm_sz, n = 1024;
+    int n = 1024;
     double a = 0.0, b = 3.0;
     double total_int;
 
-    MPI_Init(nullptr, nullptr);
-    MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
-    MPI_Comm_size(MPI_COMM_WORLD, &comm_sz);
+    auto env = boost::mpi::environment{};
+    auto comm = boost::mpi::communicator{};
 
-    get_input(my_rank, comm_sz, a, b, n);
+    auto const my_rank = comm.rank();
+    auto const comm_sz = comm.size();
 
     auto h = (b - a) / n;            // h is the same for all processes
     auto local_n = n / comm_sz;      // so is the number of trapezoids
@@ -30,30 +28,20 @@ int main() {
     auto local_int = trap(local_a, local_b, local_n, h);
 
     // Add up the integrals calculated by each process.
-    MPI_Reduce(&local_int, &total_int, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
+    if (my_rank != 0) {
+        comm.send(0, 0, local_int);
+    } else {
+        total_int = local_int;
+        for (int source = 1; source < comm_sz; ++source) {
+            comm.recv(source, 1, local_int);
+            total_int += local_int;
+        }
+    }
 
     // Print the result.
     if (my_rank == 0) {
         std::cout << std::format("With n = {} trapezoids, our estimate\n", n);
         std::cout << std::format("of the integral from {} to {} = {}\n", a, b, total_int);
-    }
-
-    MPI_Finalize();
-}
-
-void get_input(int my_rank, int comm_sz, double a, double b, int n) {
-    if (my_rank == 0) {
-        std::cout << "Enter a, b, and n\n";
-        std::cin >> a >> b >> n;
-        for (int dest = 1; dest < comm_sz; ++dest) {
-            MPI_Send(&a, 1, MPI_DOUBLE, dest, 0, MPI_COMM_WORLD);
-            MPI_Send(&b, 1, MPI_DOUBLE, dest, 0, MPI_COMM_WORLD);
-            MPI_Send(&n, 1, MPI_INT, dest, 0, MPI_COMM_WORLD);
-        }
-    } else {
-        MPI_Recv(&a, 1, MPI_DOUBLE, 0, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-        MPI_Recv(&b, 1, MPI_DOUBLE, 0, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-        MPI_Recv(&n, 1, MPI_INT, 0, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
     }
 }
 
@@ -66,4 +54,6 @@ double trap(double left_endpt, double right_endpt, int trap_count, double base_l
     return estimate * base_len;
 }
 
-double f(double x) { return x * x; }
+double f(double x) {
+    return x * x;
+}
