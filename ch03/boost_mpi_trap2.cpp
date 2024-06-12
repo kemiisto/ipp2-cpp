@@ -1,41 +1,43 @@
-#include <mpi.h>
+#include <boost/mpi.hpp>
 #include <format>
 #include <iostream>
 
-// Get the input values.
-void get_input(int my_rank, int comm_sz, double* a_p, double* b_p, int* n_p);
+// get the input values
+void get_input(const boost::mpi::communicator& comm, double& a, double& b, int& n);
 
-// Calculate local integral.
+// calculate local integral
 double trap(double left_endpt, double right_endpt, int trap_count, double base_len);
 
-// Function we're integrating.
+// function we're integrating
 double f(double x);
 
 int main() {
-    int my_rank, comm_sz, n = 1024;
-    double a = 0.0, b = 3.0;
-    double total_int;
+    int n {};
+    double a {}, b {};
+    double total_int {};
 
-    MPI_Init(nullptr, nullptr);
-    MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
-    MPI_Comm_size(MPI_COMM_WORLD, &comm_sz);
+    auto const env = boost::mpi::environment{};
+    auto const comm = boost::mpi::communicator{};
 
-    get_input(my_rank, comm_sz, &a, &b, &n);
+    auto const my_rank = comm.rank();
+    auto const comm_sz = comm.size();
 
-    auto h = (b - a) / n;            // h is the same for all processes
-    auto local_n = n / comm_sz;      // so is the number of trapezoids
+    get_input(comm, a, b, n);
 
-    auto local_a = a + my_rank * local_n * h;
-    auto local_b = local_a + local_n * h;
+    auto const h = (b - a) / n;
+    auto const local_n = n / comm_sz;
+
+    auto const local_a = a + my_rank * local_n * h;
+    auto const local_b = local_a + local_n * h;
     auto local_int = trap(local_a, local_b, local_n, h);
 
     // Add up the integrals calculated by each process.
     if (my_rank != 0) {
-        MPI_Send(&local_int, 1, MPI_DOUBLE, 0, 0, MPI_COMM_WORLD);
+        comm.send(0, 0, local_int);
     } else {
         total_int = local_int;
         for (int source = 1; source < comm_sz; ++source) {
-            MPI_Recv(&local_int, 1, MPI_DOUBLE, source, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+            comm.recv(source, 0, local_int);
             total_int += local_int;
         }
     }
@@ -45,23 +47,24 @@ int main() {
         std::cout << std::format("With n = {} trapezoids, our estimate\n", n);
         std::cout << std::format("of the integral from {} to {} = {}\n", a, b, total_int);
     }
-
-    MPI_Finalize();
 }
 
-void get_input(int my_rank, int comm_sz, double* a_p, double* b_p, int* n_p) {
+void get_input(const boost::mpi::communicator& comm, double& a, double& b, int& n) {
+    auto const my_rank = comm.rank();
+    auto const comm_sz = comm.size();
+
     if (my_rank == 0) {
         std::cout << "Enter a, b, and n\n";
-        std::cin >> *a_p >> *b_p >> *n_p;
+        std::cin >> a >> b >> n;
         for (int dest = 1; dest < comm_sz; ++dest) {
-            MPI_Send(a_p, 1, MPI_DOUBLE, dest, 0, MPI_COMM_WORLD);
-            MPI_Send(b_p, 1, MPI_DOUBLE, dest, 0, MPI_COMM_WORLD);
-            MPI_Send(n_p, 1, MPI_INT, dest, 0, MPI_COMM_WORLD);
+            comm.send(dest, 0, a);
+            comm.send(dest, 0, b);
+            comm.send(dest, 0, n);
         }
     } else {
-        MPI_Recv(a_p, 1, MPI_DOUBLE, 0, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-        MPI_Recv(b_p, 1, MPI_DOUBLE, 0, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-        MPI_Recv(n_p, 1, MPI_INT, 0, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+        comm.recv(0, 0, a);
+        comm.recv(0, 0, b);
+        comm.recv(0, 0, n);
     }
 }
 
@@ -74,4 +77,6 @@ double trap(double left_endpt, double right_endpt, int trap_count, double base_l
     return estimate * base_len;
 }
 
-double f(double x) { return x * x; }
+double f(double x) {
+    return x * x;
+}

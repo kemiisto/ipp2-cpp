@@ -11,20 +11,19 @@ find_package(Boost REQUIRED COMPONENTS mpi)
 if (WIN32)
     find_package(PThreads4W REQUIRED)
 else ()
+    find_package(Threads REQUIRED)
 endif ()
 
 set(MPI_PROGRAMS
-    ch03/mpi_hello.cpp
-    ch03/mpi_trap1.cpp
-    ch03/mpi_trap2.cpp
-    ch03/mpi_trap3.cpp
+    ch03/mpi_hello.c
+    ch03/mpi_trap1.c
+    ch03/mpi_trap2.c
 )
 
 set(BOOST_MPI_PROGRAMS
     ch03/boost_mpi_hello.cpp
     ch03/boost_mpi_trap1.cpp
     ch03/boost_mpi_trap2.cpp
-    ch03/boost_mpi_trap3.cpp
 )
 
 set(PTHREAD_PROGRAMS
@@ -60,7 +59,11 @@ foreach (PROGRAM ${PTHREAD_PROGRAMS})
     get_filename_component(ROGRAM_NAME_WE ${PROGRAM} NAME_WE)
     set(TARGET_NAME ${ROGRAM_NAME_WE})
     add_executable(${TARGET_NAME} ${PROGRAM})
-    target_link_libraries(${TARGET_NAME} PRIVATE PThreads4W::PThreads4W)
+    if (WIN32)
+        target_link_libraries(${TARGET_NAME} PRIVATE PThreads4W::PThreads4W)
+    else ()
+        target_link_libraries(${TARGET_NAME} PRIVATE Threads::Threads m)
+    endif ()
 endforeach ()
 
 foreach (PROGRAM ${THREAD_PROGRAMS})

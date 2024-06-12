@@ -5,11 +5,11 @@
 #include <string>
 
 int main() {
-    auto env = boost::mpi::environment{};
-    auto comm = boost::mpi::communicator{};
+    auto const env = boost::mpi::environment{};
+    auto const comm = boost::mpi::communicator{};
 
-    auto const my_rank = comm.rank();
     auto const comm_sz = comm.size();
+    auto const my_rank = comm.rank();
 
     if (my_rank != 0) {
         auto const greeting = std::format("Greetings from process {} of {}!", my_rank, comm_sz);

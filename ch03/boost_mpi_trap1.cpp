@@ -14,17 +14,17 @@ int main() {
     double a = 0.0, b = 3.0;
     double total_int;
 
-    auto env = boost::mpi::environment{};
-    auto comm = boost::mpi::communicator{};
+    auto const env = boost::mpi::environment{};
+    auto const comm = boost::mpi::communicator{};
 
     auto const my_rank = comm.rank();
     auto const comm_sz = comm.size();
 
-    auto h = (b - a) / n;            // h is the same for all processes
-    auto local_n = n / comm_sz;      // so is the number of trapezoids
+    auto const h = (b - a) / n;
+    auto const local_n = n / comm_sz;
 
-    auto local_a = a + my_rank * local_n * h;
-    auto local_b = local_a + local_n * h;
+    auto const local_a = a + my_rank * local_n * h;
+    auto const local_b = local_a + local_n * h;
     auto local_int = trap(local_a, local_b, local_n, h);
 
     // Add up the integrals calculated by each process.
@@ -33,7 +33,7 @@ int main() {
     } else {
         total_int = local_int;
         for (int source = 1; source < comm_sz; ++source) {
-            comm.recv(source, 1, local_int);
+            comm.recv(source, 0, local_int);
             total_int += local_int;
         }
     }
