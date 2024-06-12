@@ -15,7 +15,7 @@ double serial_pi(size_t n);
 
 int main(int argc, char* argv[]) {
     get_args(argc, argv);
-    pthread_t* thread_handles = (pthread_t*) malloc(thread_count * sizeof(pthread_t));
+    pthread_t* thread_handles = malloc(thread_count * sizeof(pthread_t));
 
     sum = 0.0;
 
@@ -25,7 +25,7 @@ int main(int argc, char* argv[]) {
     }
 
     sum = 4.0 * sum;
-    printf("With n = %lld terms,\n", n);
+    printf("With n = %zu terms,\n", n);
     printf("   Our estimate of pi = %.15f\n", sum);
     sum = serial_pi(n);
     printf("   Single thread est  = %.15f\n", sum);

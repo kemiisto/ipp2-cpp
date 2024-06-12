@@ -16,7 +16,7 @@ double serial_pi(size_t n);
 
 int main(int argc, char* argv[]) {
     get_args(argc, argv);
-    pthread_t* thread_handles = (pthread_t*) malloc(thread_count * sizeof(pthread_t));
+    pthread_t* thread_handles = malloc(thread_count * sizeof(pthread_t));
     pthread_mutex_init(&mutex, NULL);
 
     sum = 0.0;

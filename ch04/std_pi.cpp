@@ -1,5 +1,6 @@
 #include <cmath>
 #include <print>
+#include <string>
 #include <thread>
 #include <vector>
 

@@ -1,6 +1,7 @@
 #include <iostream>
 #include <mdspan>
 #include <span>
+#include <string>
 #include <string_view>
 #include <thread>
 #include <vector>
@@ -49,7 +50,7 @@ void read_matrix(std::string_view prompt, std::mdspan<double, std::dextents<std:
     auto const n = a.extent(1);
     for (size_t i = 0; i < m; ++i)
         for (size_t j = 0; j < n; ++j)
-            std::cin >> a[i, j];
+            std::cin >> a[std::array{i, j}];
 }
 
 void read_vector(std::string_view prompt, std::span<double> x) {
@@ -78,7 +79,7 @@ void print_matrix(std::string_view title, std::mdspan<double const, std::dextent
 
     for (size_t i = 0; i < m; ++i) {
         for (size_t j = 0; j < n; ++j)
-            printf("%4.1f ", a[i, j]);
+            printf("%4.1f ", a[std::array{i, j}]);
         printf("\n");
     }
 }

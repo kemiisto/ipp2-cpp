@@ -1,6 +1,7 @@
 #include <cmath>
 #include <mutex>
 #include <print>
+#include <string>
 #include <thread>
 #include <vector>
 

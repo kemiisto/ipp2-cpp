@@ -31,6 +31,8 @@ set(PTHREAD_PROGRAMS
     ch04/pth_mat_vect.c
     ch04/pth_pi.c
     ch04/pth_pi_mutex.c
+    ch04/pth_msg.c
+    ch04/pth_msg_sem.c
 )
 
 set(THREAD_PROGRAMS
@@ -38,6 +40,8 @@ set(THREAD_PROGRAMS
     ch04/std_mat_vect.cpp
     ch04/std_pi.cpp
     ch04/std_pi_mutex.cpp
+    ch04/std_msg.cpp
+    ch04/std_msg_sem.cpp
 )
 
 foreach (PROGRAM ${MPI_PROGRAMS})
