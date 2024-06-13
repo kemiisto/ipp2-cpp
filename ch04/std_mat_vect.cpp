@@ -36,10 +36,10 @@ int main(int argc, char* argv[]) {
 
     auto thread_handles = std::vector<std::thread>{};
     thread_handles.reserve(thread_count);
-    for (std::size_t thread = 0; thread < thread_count; ++thread) {
-        auto& thr = thread_handles.emplace_back(pth_mat_vect, thread);
-        thr.join();
-    }
+    for (std::size_t thread = 0; thread < thread_count; ++thread)
+        thread_handles.emplace_back(pth_mat_vect, thread);
+    for (auto& thread : thread_handles)
+        thread.join();
 
     print_vector("The product is", y);
 }

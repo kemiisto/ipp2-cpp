@@ -25,8 +25,8 @@ int main(int argc, char* argv[]) {
     for (size_t thread = 0; thread < thread_count; ++thread)
         thread_handles.emplace_back(send_msg, thread);
 
-    for (size_t thread = 0; thread < thread_count; ++thread)
-        thread_handles[thread].join();
+    for (auto& thread : thread_handles)
+        thread.join();
 }
 
 void send_msg(std::size_t rank) {

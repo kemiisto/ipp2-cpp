@@ -23,10 +23,11 @@ int main(int argc, char* argv[]) {
 
     sum = 0.0;
 
-    for (size_t thread = 0; thread < thread_count; ++thread) {
-        auto& thr = thread_handles.emplace_back(thread_sum, thread);
-        thr.join();
-    }
+    for (size_t thread = 0; thread < thread_count; ++thread)
+        thread_handles.emplace_back(thread_sum, thread);
+
+    for (auto& thread : thread_handles)
+        thread.join();
 
     sum = 4.0 * sum;
     std::print("With n = {} terms,\n", n);

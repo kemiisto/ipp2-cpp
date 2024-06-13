@@ -19,10 +19,11 @@ int main(int argc, char* argv[]) {
 
     sum = 0.0;
 
-    for (size_t thread = 0; thread < thread_count; ++thread) {
+    for (size_t thread = 0; thread < thread_count; ++thread)
         pthread_create(&thread_handles[thread], NULL, thread_sum, (void*)thread);
+
+    for (size_t thread = 0; thread < thread_count; ++thread)
         pthread_join(thread_handles[thread], NULL);
-    }
 
     sum = 4.0 * sum;
     printf("With n = %zu terms,\n", n);

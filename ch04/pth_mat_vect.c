@@ -32,10 +32,11 @@ int main(int argc, char* argv[]) {
     read_vector("Enter the vector", x, n);
     print_vector("We read", x, n);
 
-    for (size_t thread = 0; thread < thread_count; ++thread) {
+    for (size_t thread = 0; thread < thread_count; ++thread)
         pthread_create(&thread_handles[thread], NULL, pth_mat_vect, (void*)thread);
+
+    for (size_t thread = 0; thread < thread_count; ++thread)
         pthread_join(thread_handles[thread], NULL);
-    }
 
     print_vector("The product is", y, m);
 
