@@ -1,5 +1,5 @@
 #include <format>
-#include <iostream>
+#include <print>
 #include <string>
 #include <thread>
 #include <vector>
@@ -30,8 +30,6 @@ void send_msg(std::size_t rank) {
     auto my_msg = std::format("Hello to {} from {}", dest, rank);
     messages[dest] = my_msg;
 
-    if (!messages[rank].empty())
-        std::cout << std::format("Thread {} > {}\n", rank, messages[rank]);
-    else
-        std::cout << std::format("Thread {} > No message from {}\n", rank, source);
+    if (!messages[rank].empty()) std::println("Thread {} > {}", rank, messages[rank]);
+    else std::println("Thread {} > No message from {}", rank, source);
 }

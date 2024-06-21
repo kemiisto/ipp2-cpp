@@ -40,6 +40,7 @@ set(THREAD_PROGRAMS
     ch04/std_mat_vect.cpp
     ch04/std_pi.cpp
     ch04/std_pi_mutex.cpp
+    ch04/std_pi_mutex_lock_guard.cpp
     ch04/std_msg.cpp
     ch04/std_msg_sem.cpp
 )

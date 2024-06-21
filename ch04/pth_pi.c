@@ -11,7 +11,7 @@ void* thread_sum(void* rank);
 
 void get_args(int argc, char* argv[]);
 
-double serial_pi(size_t n);
+double serial_pi(size_t k);
 
 int main(int argc, char* argv[]) {
     get_args(argc, argv);

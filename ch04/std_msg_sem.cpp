@@ -1,6 +1,6 @@
 #include <format>
-#include <iostream>
 #include <memory>
+#include <print>
 #include <semaphore>
 #include <string>
 #include <thread>
@@ -37,5 +37,5 @@ void send_msg(std::size_t rank) {
     semaphores[dest]->release();
 
     semaphores[rank]->acquire();
-    std::cout << std::format("Thread {} > {}\n", rank, messages[rank]);
+    std::println("Thread {} > {}", rank, messages[rank]);
 }

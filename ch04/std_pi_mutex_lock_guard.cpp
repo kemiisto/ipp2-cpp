@@ -1,4 +1,5 @@
 #include <cmath>
+#include <mutex>
 #include <print>
 #include <string>
 #include <thread>
@@ -7,6 +8,7 @@
 size_t thread_count;
 size_t n;
 double sum;
+std::mutex mutex;
 
 void thread_sum(size_t rank);
 
@@ -16,7 +18,7 @@ double serial_pi(size_t k);
 
 int main(int argc, char* argv[]) {
     get_args(argc, argv);
-    auto thread_handles = std::vector<std::thread>{};
+    auto thread_handles = std::vector<std::thread>();
     thread_handles.reserve(thread_count);
 
     sum = 0.0;
@@ -40,9 +42,13 @@ void thread_sum(size_t rank) {
     auto const my_first_i = my_n * rank;
     auto const my_last_i = my_first_i + my_n;
 
+    double my_sum = 0.0;
     auto factor = (my_first_i % 2 == 0) ? 1 : -1;
     for (size_t i = my_first_i; i < my_last_i; ++i, factor = -factor)
-        sum += static_cast<double>(factor) / (2 * static_cast<double>(i) + 1);
+        my_sum += static_cast<double>(factor) / (2 * static_cast<double>(i) + 1);
+
+    auto guard = std::lock_guard{mutex};
+    sum += my_sum;
 }
 
 double serial_pi(size_t k) {

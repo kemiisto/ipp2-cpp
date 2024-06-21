@@ -14,7 +14,7 @@ void thread_sum(size_t rank);
 
 void get_args(int argc, char* argv[]);
 
-double serial_pi(size_t n);
+double serial_pi(size_t k);
 
 int main(int argc, char* argv[]) {
     get_args(argc, argv);
@@ -38,26 +38,26 @@ int main(int argc, char* argv[]) {
 }
 
 void thread_sum(size_t rank) {
-    auto my_n = n / thread_count;
-    auto my_first_i = my_n * rank;
-    auto my_last_i = my_first_i + my_n;
+    auto const my_n = n / thread_count;
+    auto const my_first_i = my_n * rank;
+    auto const my_last_i = my_first_i + my_n;
 
     double my_sum = 0.0;
     auto factor = (my_first_i % 2 == 0) ? 1 : -1;
     for (size_t i = my_first_i; i < my_last_i; ++i, factor = -factor)
         my_sum += static_cast<double>(factor) / (2 * static_cast<double>(i) + 1);
 
-    auto guard = std::lock_guard{mutex};
+    mutex.lock();
     sum += my_sum;
+    mutex.unlock();
 }
 
-double serial_pi(size_t n) {
-    auto sum = 0.0;
+double serial_pi(size_t k) {
+    auto s = 0.0;
     auto factor = 1;
-    for (size_t i = 0; i < n; ++i, factor = -factor)
-        sum += static_cast<double>(factor) / (2 * static_cast<double>(i) + 1);
-    return 4.0 * sum;
-
+    for (size_t i = 0; i < k; ++i, factor = -factor)
+        s += static_cast<double>(factor) / (2 * static_cast<double>(i) + 1);
+    return 4.0 * s;
 }
 
 void get_args(int argc, char* argv[]) {
