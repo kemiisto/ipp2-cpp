@@ -33,6 +33,7 @@ set(PTHREAD_PROGRAMS
     ch04/pth_pi_mutex.c
     ch04/pth_msg.c
     ch04/pth_msg_sem.c
+    ch04/pth_barrier_bar.c
 )
 
 set(THREAD_PROGRAMS
@@ -43,6 +44,8 @@ set(THREAD_PROGRAMS
     ch04/std_pi_mutex_lock_guard.cpp
     ch04/std_msg.cpp
     ch04/std_msg_sem.cpp
+    ch04/std_latch_bar.cpp
+    ch04/std_barrier_bar.cpp
 )
 
 foreach (PROGRAM ${MPI_PROGRAMS})

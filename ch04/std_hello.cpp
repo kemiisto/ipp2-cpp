@@ -16,8 +16,8 @@ int main(int argc, char* argv[]) {
 
     std::print("hello from the main thread\n");
 
-    for (std::size_t thread = 0; thread < thread_count; ++thread)
-        threads[thread].join();
+    for (auto&& thread : threads)
+        thread.join();
 }
 
 void hello(std::size_t rank) {
