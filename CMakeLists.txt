@@ -16,12 +16,14 @@ endif ()
 
 set(MPI_PROGRAMS
     ch03/mpi_hello.c
+    ch03/mpi_hello_any.c
     ch03/mpi_trap1.c
     ch03/mpi_trap2.c
 )
 
 set(BOOST_MPI_PROGRAMS
     ch03/boost_mpi_hello.cpp
+    ch03/boost_mpi_hello_any.cpp
     ch03/boost_mpi_trap1.cpp
     ch03/boost_mpi_trap2.cpp
 )
