@@ -1,7 +1,6 @@
 #include <boost/mpi/environment.hpp>
 #include <boost/mpi/communicator.hpp>
-#include <format>
-#include <iostream>
+#include <print>
 
 // Calculate local integral.
 double trap(double left_endpt, double right_endpt, int trap_count, double base_len);
@@ -40,8 +39,8 @@ int main() {
 
     // Print the result.
     if (my_rank == 0) {
-        std::cout << std::format("With n = {} trapezoids, our estimate\n", n);
-        std::cout << std::format("of the integral from {} to {} = {}\n", a, b, total_int);
+        std::println("With n = {} trapezoids, our estimate", n);
+        std::println("of the integral from {} to {} = {}", a, b, total_int);
     }
 }
 

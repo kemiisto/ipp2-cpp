@@ -1,6 +1,6 @@
 #include <boost/mpi.hpp>
-#include <format>
 #include <iostream>
+#include <print>
 
 // get the input values
 void get_input(const boost::mpi::communicator& comm, double& a, double& b, int& n);
@@ -44,8 +44,8 @@ int main() {
 
     // Print the result.
     if (my_rank == 0) {
-        std::cout << std::format("With n = {} trapezoids, our estimate\n", n);
-        std::cout << std::format("of the integral from {} to {} = {}\n", a, b, total_int);
+        std::println("With n = {} trapezoids, our estimate", n);
+        std::println("of the integral from {} to {} = {}", a, b, total_int);
     }
 }
 
@@ -54,7 +54,7 @@ void get_input(const boost::mpi::communicator& comm, double& a, double& b, int& 
     auto const comm_sz = comm.size();
 
     if (my_rank == 0) {
-        std::cout << "Enter a, b, and n\n";
+        std::println("Enter a, b, and n");
         std::cin >> a >> b >> n;
         for (int dest = 1; dest < comm_sz; ++dest) {
             comm.send(dest, 0, a);
